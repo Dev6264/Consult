@@ -1,0 +1,11 @@
+{
+  "storeSlug": "acme-bikes",
+  "orders": [
+    { "id": "1001", "total": 260, "createdAt": "2024-08-05T10:00:00Z" },
+    { "id": "1002", "total": 180, "createdAt": "2024-08-06T14:00:00Z" }
+  ],
+  "products": [
+    { "id": "p-1", "name": "Gravel Pro Bike", "price": 1890 },
+    { "id": "p-2", "name": "Aero Helmet", "price": 160 }
+  ]
+}

@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  ANALYST
+  VIEWER
+}
+
+enum EventType {
+  visit
+  view_item
+  add_to_cart
+  begin_checkout
+  purchase
+}
+
+model Store {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  timezone  String   @default("UTC")
+  createdAt DateTime @default(now())
+  users     User[]
+  apiKeys   ApiKey[]
+  events    Event[]
+  campaigns Campaign[]
+  media     MediaAsset[]
+  webhooks  Webhook[]
+  auditLogs AuditLog[]
+  emailUploads EmailFunnelUpload[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  storeId   String
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(ANALYST)
+  createdAt DateTime @default(now())
+  store     Store    @relation(fields: [storeId], references: [id])
+  auditLogs AuditLog[]
+}
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  storeId   String
+  label     String
+  key       String   @unique
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  store     Store    @relation(fields: [storeId], references: [id])
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  storeId     String
+  type        EventType
+  sessionId   String
+  userId      String?
+  path        String
+  device      String
+  country     String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  referrer    String?
+  createdAt   DateTime  @default(now())
+  store       Store     @relation(fields: [storeId], references: [id])
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  storeId     String
+  name        String
+  baseUrl     String
+  utmSource   String
+  utmMedium   String
+  utmCampaign String
+  createdAt   DateTime @default(now())
+  store       Store    @relation(fields: [storeId], references: [id])
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  storeId   String
+  folder    String
+  filename  String
+  url       String
+  uploadedBy String
+  createdAt DateTime @default(now())
+  store     Store    @relation(fields: [storeId], references: [id])
+}
+
+model Webhook {
+  id        String   @id @default(cuid())
+  storeId   String
+  url       String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  store     Store    @relation(fields: [storeId], references: [id])
+}
+
+model EmailFunnelUpload {
+  id        String   @id @default(cuid())
+  storeId   String
+  filename  String
+  rows      Int
+  createdAt DateTime @default(now())
+  store     Store    @relation(fields: [storeId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  storeId   String
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  store     Store    @relation(fields: [storeId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+}
