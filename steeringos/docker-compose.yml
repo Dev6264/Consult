@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: steeringos
+      POSTGRES_PASSWORD: steeringos
+      POSTGRES_DB: steeringos
+    ports:
+      - "5432:5432"
+    volumes:
+      - steeringos_db:/var/lib/postgresql/data
+  web:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: bash -c "npm install && npm run prisma:generate && npm run prisma:migrate -- --name init && npm run seed && npm run dev"
+    environment:
+      DATABASE_URL: postgresql://steeringos:steeringos@db:5432/steeringos
+      NEXTAUTH_SECRET: dev-secret
+      NEXTAUTH_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+volumes:
+  steeringos_db:
