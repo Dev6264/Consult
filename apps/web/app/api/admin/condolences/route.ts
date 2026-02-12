@@ -1,0 +1,2 @@
+import { NextResponse } from 'next/server'; import { prisma } from '@/lib/prisma'; import { requireAdmin } from '@/lib/auth';
+export async function POST(req:Request){ await requireAdmin(); const f=await req.formData(); await prisma.condolence.update({where:{id:String(f.get('id'))},data:{status:String(f.get('status')) as any}}); return NextResponse.redirect(new URL('/admin/condolences',req.url)); }

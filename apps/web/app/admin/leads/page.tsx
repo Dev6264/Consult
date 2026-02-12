@@ -1,0 +1,2 @@
+import { prisma } from '@/lib/prisma'; import { isAdmin } from '@/lib/auth'; import { redirect } from 'next/navigation';
+export default async function Page(){ if(!(await isAdmin())) redirect('/admin/login'); const leads=await prisma.serviceLead.findMany({orderBy:{createdAt:'desc'}}); return <div><a className='underline' href='/api/admin/leads/export'>Export CSV</a>{leads.map(l=><p key={l.id}>{l.category} {l.requesterName}</p>)}</div>; }

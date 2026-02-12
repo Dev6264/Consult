@@ -1,0 +1,2 @@
+import QRCode from 'qrcode'; import { prisma } from '@/lib/prisma';
+export async function GET(req:Request,{params}:{params:Promise<{id:string}>}){ const {id}=await params; const ob=await prisma.obituary.findUnique({where:{id}}); if(!ob) return new Response('Not found',{status:404}); const data=await QRCode.toBuffer(`${process.env.APP_URL}/obituary/${ob.slug}-${ob.id}`); return new Response(data,{headers:{'content-type':'image/png'}}); }

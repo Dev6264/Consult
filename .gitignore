@@ -1,0 +1,8 @@
+node_modules
+.next
+.env
+apps/web/.env
+apps/web/uploads
+coverage
+.venv
+consult-main

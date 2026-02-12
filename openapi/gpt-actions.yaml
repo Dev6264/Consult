@@ -1,0 +1,64 @@
+openapi: 3.1.0
+info:
+  title: Verified Obituary GPT Actions
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+security:
+  - ApiKeyAuth: []
+paths:
+  /api/gpt/intake/start:
+    post:
+      operationId: intakeStart
+      responses: { '200': { description: ok } }
+  /api/gpt/intake/submit:
+    post:
+      operationId: intakeSubmit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fullName, county, dod, primaryContactName, primaryContactPhone]
+      responses: { '200': { description: created } }
+  /api/gpt/obituaries/{id}:
+    get:
+      operationId: getObituaryStatus
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses: { '200': { description: ok } }
+  /api/gpt/obituaries/{id}/add_details:
+    post:
+      operationId: addObituaryDetails
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses: { '200': { description: ok } }
+  /api/gpt/search:
+    get:
+      operationId: searchObituaries
+      parameters:
+        - in: query
+          name: name
+          schema: { type: string }
+        - in: query
+          name: county
+          schema: { type: string }
+      responses: { '200': { description: ok } }
