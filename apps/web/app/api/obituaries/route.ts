@@ -30,5 +30,5 @@ export async function POST(req: Request) {
   const ridPath = await savePrivateFile(Buffer.from(await requesterId.arrayBuffer()), requesterId.name);
   await prisma.documentUpload.createMany({ data: [{ obituaryId: obituary.id, type: 'DEATH_CERT', filePath: dcPath, mimeType: deathCert.type }, { obituaryId: obituary.id, type: 'REQUESTER_ID', filePath: ridPath, mimeType: requesterId.type }] });
   await prisma.auditLog.create({ data: { obituaryId: obituary.id, actor: 'SYSTEM', action: 'SUBMISSION_CREATED', detailsJson: { risk, duplicate } } });
-  return NextResponse.redirect(new URL(`/obituary/${obituary.slug}-${obituary.id}`, req.url));
+  return NextResponse.redirect(new URL(`/create/submitted?id=${obituary.id}`, req.url));
 }
