@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum CaseStatus {
+  draft
+  pending_verification
+  live
+  rejected
+}
+
+enum PrivacyLevel {
+  public
+  invite
+}
+
+enum PackageTier {
+  announcement
+  standard
+  premium
+  corporate
+}
+
+enum FaithType {
+  christian
+  muslim
+  hindu
+  interfaith
+  neutral
+}
+
+enum EventType {
+  vigil
+  service
+  burial
+}
+
+enum RSVPStatus {
+  yes
+  no
+  maybe
+}
+
+enum TakedownStatus {
+  open
+  closed
+}
+
+model Case {
+  id                 String      @id @default(uuid())
+  slug               String      @unique
+  package            PackageTier
+  status             CaseStatus  @default(draft)
+  verified           Boolean     @default(false)
+  consentAttestation Boolean     @default(false)
+  privacy            PrivacyLevel @default(public)
+  noindex            Boolean     @default(true)
+  tributesEnabled    Boolean     @default(false)
+  paymentStatus      String      @default("unpaid")
+  receiptId          String?
+  publishedAt        DateTime?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  organizer Organizer?
+  deceased  Deceased?
+  events    Event[]
+  media     Media?
+  rsvps     RSVP[]
+  auditLogs AuditLog[]
+  copyDeck  CopyDeck?
+}
+
+model Organizer {
+  id       String @id @default(uuid())
+  caseId   String @unique
+  fullName String
+  phoneE164 String
+  relation String
+  case     Case   @relation(fields: [caseId], references: [id])
+}
+
+model Deceased {
+  id        String @id @default(uuid())
+  caseId    String @unique
+  fullName  String
+  dob       String?
+  dod       String
+  faith     FaithType
+  shortBio  String
+  case      Case   @relation(fields: [caseId], references: [id])
+}
+
+model Event {
+  id      String   @id @default(uuid())
+  caseId  String
+  type    EventType
+  startIso String
+  venue   String
+  address String?
+  mapUrl  String
+  lat     Float?
+  lng     Float?
+  case    Case     @relation(fields: [caseId], references: [id])
+}
+
+model Media {
+  id                   String @id @default(uuid())
+  caseId               String @unique
+  portraitRetouchedUrl String
+  cardSqUrl            String
+  cardOgUrl            String
+  audioEnUrl           String?
+  audioSwUrl           String?
+  programPdfUrl        String?
+  case                 Case   @relation(fields: [caseId], references: [id])
+}
+
+model RSVP {
+  id        String    @id @default(uuid())
+  caseId    String
+  name      String?
+  phone     String?
+  status    RSVPStatus
+  headcount Int
+  createdAt DateTime @default(now())
+  case      Case     @relation(fields: [caseId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  caseId    String?
+  event     String
+  meta      Json
+  createdAt DateTime @default(now())
+  case      Case?    @relation(fields: [caseId], references: [id])
+}
+
+model TakedownRequest {
+  id             String         @id @default(uuid())
+  caseId         String?
+  url            String
+  requesterName  String
+  requesterPhone String
+  reason         String
+  status         TakedownStatus @default(open)
+  createdAt      DateTime       @default(now())
+}
+
+model CopyDeck {
+  id         String @id @default(uuid())
+  caseId     String @unique
+  copyShortEn String
+  copyShortSw String
+  copyLong    String
+  radio15     String
+  radio30     String
+  case       Case   @relation(fields: [caseId], references: [id])
+}

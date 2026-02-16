@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900;
+}
+
+input, select, textarea {
+  @apply text-slate-900;
+}
+
+.watermark {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 0, 0, 0.08),
+    rgba(255, 0, 0, 0.08) 20px,
+    rgba(255, 0, 0, 0.15) 20px,
+    rgba(255, 0, 0, 0.15) 40px
+  );
+}
