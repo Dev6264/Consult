@@ -1,0 +1,2 @@
+import { NextResponse } from 'next/server'; import { prisma } from '@/lib/prisma';
+export async function POST(req:Request){ const f=await req.formData(); await prisma.serviceLead.create({data:{obituaryId:String(f.get('obituaryId')),category:String(f.get('category')),requesterName:String(f.get('requesterName')),phone:String(f.get('phone')),notes:String(f.get('notes')||'')}}); return NextResponse.redirect(new URL(req.headers.get('referer')||'/',req.url)); }

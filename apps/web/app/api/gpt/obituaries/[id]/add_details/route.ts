@@ -1,0 +1,2 @@
+import { NextResponse } from 'next/server'; import { prisma } from '@/lib/prisma'; import { requireGptAuth } from '@/lib/gptAuth';
+export async function POST(req:Request,{params}:{params:Promise<{id:string}>}){ if(!requireGptAuth(req)) return NextResponse.json({error:'Unauthorized'},{status:401}); const {id}=await params; const b=await req.json(); const ob=await prisma.obituary.update({where:{id},data:{shortBio:b.shortBio,photosJson:b.photos||[],funeralEvents:b.funeralEvents||{},mapUrl:b.mapUrl||null}}); return NextResponse.json({id:ob.id,status:ob.status}); }

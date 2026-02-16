@@ -1,0 +1,13 @@
+{
+  "name": "verified-obituary-commerce",
+  "private": true,
+  "workspaces": ["apps/web"],
+  "scripts": {
+    "dev": "npm --workspace apps/web run dev",
+    "build": "npm --workspace apps/web run build",
+    "test": "npm --workspace apps/web run test",
+    "prisma:generate": "npm --workspace apps/web exec prisma generate --schema ../../prisma/schema.prisma",
+    "prisma:migrate": "npm --workspace apps/web exec prisma migrate dev --schema ../../prisma/schema.prisma",
+    "bootstrap-admin": "node scripts/bootstrap-admin.mjs"
+  }
+}

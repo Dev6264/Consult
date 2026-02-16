@@ -1,0 +1,2 @@
+import { NextResponse } from 'next/server'; import { prisma } from '@/lib/prisma'; import { requireGptAuth } from '@/lib/gptAuth';
+export async function GET(req:Request,{params}:{params:Promise<{id:string}>}){ if(!requireGptAuth(req)) return NextResponse.json({error:'Unauthorized'},{status:401}); const {id}=await params; const ob=await prisma.obituary.findUnique({where:{id}}); if(!ob) return NextResponse.json({error:'Not found'},{status:404}); return NextResponse.json({id:ob.id,status:ob.status,link:`${process.env.APP_URL}/obituary/${ob.slug}-${ob.id}`}); }

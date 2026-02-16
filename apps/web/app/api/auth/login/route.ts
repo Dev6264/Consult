@@ -1,0 +1,2 @@
+import { NextResponse } from 'next/server'; import { setAdminCookie } from '@/lib/auth';
+export async function POST(req:Request){ const f=await req.formData(); if(String(f.get('email'))===process.env.ADMIN_EMAIL && String(f.get('password'))===process.env.ADMIN_PASSWORD){ await setAdminCookie(); return NextResponse.redirect(new URL('/admin',req.url)); } return NextResponse.json({error:'Invalid login'},{status:401}); }

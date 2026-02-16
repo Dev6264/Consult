@@ -1,0 +1,1 @@
+export default function LoginPage() { return <form action="/api/auth/login" method="post" className="grid gap-2 max-w-sm"><h1 className="text-xl font-bold">Admin Login</h1><input className="border p-2" name="email" /><input className="border p-2" type="password" name="password" /><button className="bg-black text-white p-2">Login</button></form>; }

@@ -1,0 +1,6 @@
+- Next.js App Router UI + route handlers for REST.
+- Prisma/Postgres core data model under `/prisma`.
+- Manual moderation workflow with status transitions and audit logs.
+- High-profile risk gating via watchlist + heuristics.
+- Condolence moderation, partner service lead capture, and CSV export.
+- GPT Actions endpoints with API key auth.

@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "client"
+  
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ObituaryStatus {
+  DRAFT
+  SUBMITTED
+  SUBMITTED_HIGH_RISK
+  NEEDS_INFO
+  VERIFIED
+  PUBLISHED
+  REJECTED
+}
+
+enum RiskFlag {
+  NORMAL
+  POSSIBLE_PUBLIC_FIGURE
+  WATCHLIST_MATCH
+  HIGH_RISK
+}
+
+enum DocumentType {
+  DEATH_CERT
+  REQUESTER_ID
+  OTHER
+}
+
+enum CondolenceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+model Obituary {
+  id                     String          @id @default(cuid())
+  slug                   String
+  fullName               String
+  otherNames             String?
+  dob                    DateTime?
+  dod                    DateTime?
+  county                 String
+  placeOfDeath           String?
+  religionTemplate       String?
+  primaryContactName     String
+  primaryContactPhone    String
+  primaryContactRelation String?
+  paybillNumber          String?
+  paybillAccount         String?
+  contributionNote       String?
+  funeralEvents          Json?
+  burialLocation         String?
+  mapUrl                 String?
+  shortBio               String?
+  photosJson             Json?
+  status                 ObituaryStatus  @default(DRAFT)
+  riskFlag               RiskFlag        @default(NORMAL)
+  isPremium              Boolean         @default(false)
+  internalNotes          String?
+  needsInfoToken         String?
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  documents              DocumentUpload[]
+  auditLogs              AuditLog[]
+  condolences            Condolence[]
+  serviceLeads           ServiceLead[]
+  reportAlerts           ReportAlert[]
+
+  @@unique([slug, id])
+}
+
+model DocumentUpload {
+  id         String       @id @default(cuid())
+  obituaryId String
+  type       DocumentType
+  filePath   String
+  mimeType   String
+  createdAt  DateTime     @default(now())
+  obituary   Obituary     @relation(fields: [obituaryId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  obituaryId  String
+  actor       String
+  action      String
+  detailsJson Json?
+  createdAt   DateTime @default(now())
+  obituary    Obituary @relation(fields: [obituaryId], references: [id], onDelete: Cascade)
+}
+
+model Condolence {
+  id         String          @id @default(cuid())
+  obituaryId String
+  authorName String
+  message    String
+  status     CondolenceStatus @default(PENDING)
+  createdAt  DateTime        @default(now())
+  obituary   Obituary         @relation(fields: [obituaryId], references: [id], onDelete: Cascade)
+}
+
+model ServiceLead {
+  id            String     @id @default(cuid())
+  obituaryId    String
+  category      String
+  requesterName String
+  phone         String
+  notes         String?
+  status        LeadStatus @default(NEW)
+  createdAt     DateTime   @default(now())
+  obituary      Obituary   @relation(fields: [obituaryId], references: [id], onDelete: Cascade)
+}
+
+model WatchlistName {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  reason    String?
+  createdAt DateTime @default(now())
+}
+
+model ReportAlert {
+  id         String   @id @default(cuid())
+  obituaryId String
+  reporter   String?
+  reason     String
+  createdAt  DateTime @default(now())
+  obituary   Obituary @relation(fields: [obituaryId], references: [id], onDelete: Cascade)
+}
+
+model PremiumIntent {
+  id         String   @id @default(cuid())
+  obituaryId String
+  contact    String
+  notes      String?
+  createdAt  DateTime @default(now())
+}
